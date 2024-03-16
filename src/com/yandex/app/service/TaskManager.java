@@ -58,12 +58,10 @@ public class TaskManager {
 
     public void createSubtask(Subtask subtask) {
         subtaskMap.put(subtask.getId(), subtask);
-        taskMap.put(subtask.getId(), subtask);
     }
 
     public void createEpic(Epic epic) {
         epicMap.put(epic.getId(), epic);
-        taskMap.put(epic.getId(), epic);
     }
 
     public void updateTask(Task task) {
