@@ -3,15 +3,51 @@ package com.yandex.app;
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
+import com.yandex.app.service.InMemoryTaskManager;
+import com.yandex.app.service.Managers;
 import com.yandex.app.service.TaskManager;
 import com.yandex.app.service.TaskStatus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
+
+    private static void printAllTasks(TaskManager manager) {
+        System.out.println("Задачи:");
+        for (Task task : manager.getAllTasks()) {
+            System.out.println(task);
+        }
+
+        System.out.println("Эпики:");
+        for (Task epic : manager.getAllEpics()) {
+            System.out.println(epic);
+
+            for (Task task : manager.getSubtasksForEpic(epic.getId())) {
+                System.out.println("--> " + task);
+            }
+        }
+        System.out.println("Подзадачи:");
+        for (Task subtask : manager.getAllSubtasks()) {
+            System.out.println(subtask);
+        }
+
+        System.out.println("История:");
+        for (Task task : manager.getHistory()) {
+            System.out.println(task);
+        }
+    }
+
     public static void main(String[] args) {
+        // Получение объекта-менеджера задач через Managers.getDefault()
+        TaskManager taskManager = Managers.getDefault();
+
+        // Использование полученного объекта-менеджера для выполнения операций
+        Task task = taskManager.getTaskById(1);
+        List<Task> history = taskManager.getHistory();
+
         // Создание com.yandex.app.service.TaskManager
-        TaskManager taskManager = new TaskManager();
+        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
 
         // Создание задач
         Task task1 = new Task("Задача 1", "Описание задачи 1", 1, TaskStatus.NEW);
@@ -35,13 +71,22 @@ public class Main {
         taskManager.createTask(epic1);
         taskManager.createTask(epic2);
 
+        // Вывод всех задач и истории после создания задач
+        printAllTasks(taskManager);
+
         // Управление статусами эпиков и подзадач
         taskManager.manageStatuses();
 
         // Вывод результатов
         System.out.println("Список всех задач:");
-        for (Task task : taskManager.getAllTasks()) {
-            System.out.println(task);
+        for (Task t : taskManager.getAllTasks()) {
+            System.out.println(t);
+        }
+        for (Subtask st : taskManager.getAllSubtasks()) {
+            System.out.println(st);
+        }
+        for (Epic e : taskManager.getAllEpics()) {
+            System.out.println(e);
         }
 
         // Удаление задач и эпиков
