@@ -47,8 +47,6 @@ public interface TaskManager {
 
     List<Epic> getEpics(int epicId);
 
-    void updateHistory(Task task);
-
     void manageStatuses();
 
     void removeAllTasks();

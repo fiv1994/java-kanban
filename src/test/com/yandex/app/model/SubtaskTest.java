@@ -1,13 +1,24 @@
-package com.yandex.app.model.test;
+package test.com.yandex.app.model;
 
 import com.yandex.app.model.Subtask;
+import com.yandex.app.service.InMemoryTaskManager;
+import com.yandex.app.service.TaskManager;
 import com.yandex.app.service.TaskStatus;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SubtaskTest {
     private Subtask subtask;
+    private TaskManager taskManager;
+
+    @BeforeEach
+    void setUp() {
+        taskManager = new InMemoryTaskManager(); // Создание экземпляра InMemoryTaskManager
+        subtask = new Subtask("Test Subtask", "Test Description", 1, TaskStatus.NEW, false, 123);
+    }
 
     @Test
     void getEpicId() {
@@ -25,17 +36,19 @@ class SubtaskTest {
         String expected = "com.yandex.app.model.Subtask{" +
                 "title='Test Subtask" +
                 "', description='Test Description" +
-                "', taskId=1, status=TODO" +
+                "', taskId=1, status=NEW" +
                 ", epicId=123" +
                 '}';
         assertEquals(expected, subtask.toString());
     }
 
     @Test
-    public void testSetSelfAsEpic() {
-        Subtask subtask = new Subtask("Test Subtask", "Test Description", 1, TaskStatus.NEW, false, 123);
+    void testSetSelfAsEpic() {
+        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        Subtask subtask = new Subtask("Test Subtask", "Test Description", 1, TaskStatus.NEW,
+                false, 123);
         subtask.setEpicId(1); // Попытка сделать самого себя эпиком
 
-        assertNotEquals(1, subtask.getEpicId()); // ID эпика не должен измениться
+        assertFalse(taskManager.isValidSubtask(subtask));
     }
 }

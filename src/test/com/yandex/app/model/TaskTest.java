@@ -1,8 +1,11 @@
-package com.yandex.app.model.test;
+package test.com.yandex.app.model;
 
 import com.yandex.app.model.Task;
+import com.yandex.app.service.InMemoryTaskManager;
+import com.yandex.app.service.TaskManager;
 import com.yandex.app.service.TaskStatus;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,6 +13,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class TaskTest {
 
     private Task task;
+    private TaskManager taskManager;
+
+    @BeforeEach
+    void setUp() {
+        taskManager = new InMemoryTaskManager(); // Создание экземпляра InMemoryTaskManager
+        task = new Task("Test Task", "Test Description", 1, TaskStatus.IN_PROGRESS);
+    }
 
     @Test
     void getTitle() {
@@ -88,6 +98,4 @@ class TaskTest {
         assertTrue(task1.equals(task2));
         assertFalse(task1.equals(task3));
     }
-
-
 }

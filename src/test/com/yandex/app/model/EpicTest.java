@@ -1,18 +1,26 @@
-package com.yandex.app.model.test;
+package test.com.yandex.app.model;
 
 import java.util.List;
 
 import com.yandex.app.model.Epic;
+import com.yandex.app.service.InMemoryTaskManager;
 import com.yandex.app.service.TaskManager;
 import com.yandex.app.service.TaskStatus;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
 
     private Epic epic;
     private TaskManager taskManager;
+
+    @BeforeEach
+    void setUp() {
+        taskManager = new InMemoryTaskManager(); // Создание экземпляра InMemoryTaskManager
+        epic = new Epic("Test Epic", "Test Description", 1, TaskStatus.IN_PROGRESS, List.of(1, 2, 3));
+    }
 
     @Test
     void getSubtaskIds() {

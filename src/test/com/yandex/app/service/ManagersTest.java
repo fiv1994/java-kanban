@@ -1,4 +1,4 @@
-package com.yandex.app.service.test;
+package test.com.yandex.app.service;
 import com.yandex.app.service.Managers;
 import com.yandex.app.service.TaskManager;
 import com.yandex.app.service.HistoryManager;
