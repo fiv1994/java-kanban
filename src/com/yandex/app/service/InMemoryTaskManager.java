@@ -18,7 +18,6 @@ public class InMemoryTaskManager implements TaskManager {
     private int subtaskIdCounter = 1;
     private int epicIdCounter = 1;
 
-
     public InMemoryTaskManager() {
         taskMap = new HashMap<>();
         epicMap = new HashMap<>();
