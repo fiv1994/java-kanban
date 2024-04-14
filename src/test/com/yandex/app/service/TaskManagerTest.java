@@ -1,13 +1,8 @@
 package test.com.yandex.app.service;
 
-import com.yandex.app.model.Epic;
-import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
-import com.yandex.app.service.InMemoryTaskManager;
 import com.yandex.app.service.TaskManager;
 import com.yandex.app.service.TaskStatus;
-
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
