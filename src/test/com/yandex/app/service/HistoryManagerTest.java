@@ -12,26 +12,32 @@ import static org.junit.jupiter.api.Assertions.*;
 public class HistoryManagerTest {
 
     private HistoryManager historyManager;
-    
+
     @Test
-    public void testTaskHistory() {
-        Task originalTask = new Task("Исходная задача", "Исходное описание", 0, TaskStatus.NEW);
-        historyManager.add(originalTask);
+    void testAddAndGetHistory() {
+        Task task = new Task("Test Task", "Test Description", 1, TaskStatus.NEW);
+        historyManager.add(task);
+        List<Task> history = historyManager.getHistory();
+        assertEquals(1, history.size());
+        assertEquals(task, history.get(0));
+    }
 
-        // Modifying the Исходная задача
-        originalTask.setTitle("Изменённая задача");
-        originalTask.setDescription("Изменённое описание");
+    @Test
+    void testRemove() {
+        Task task = new Task("Test Task", "Test Description", 1, TaskStatus.NEW);
+        historyManager.add(task);
+        historyManager.remove(task.getId());
+        assertTrue(historyManager.getHistory().isEmpty());
+    }
 
-        historyManager.add(originalTask);
-
-        // Retrieving the history
-        List<Task> taskHistory = historyManager.getHistory();
-
-        // Checking the history
-        assertEquals(2, taskHistory.size());
-        assertEquals("Исходная задача", taskHistory.get(0).getTitle());
-        assertEquals("Исходное описание", taskHistory.get(0).getDescription());
-        assertEquals("Изменённая задача", taskHistory.get(1).getTitle());
-        assertEquals("Изменённое описание", taskHistory.get(1).getDescription());
+    @Test
+    void testUpdateHistory() {
+        Task task = new Task("Test Task", "Test Description", 1, TaskStatus.NEW);
+        historyManager.add(task);
+        Task updatedTask = new Task("Updated Task", "Updated Description", 1, TaskStatus.IN_PROGRESS);
+        historyManager.updateHistory(updatedTask);
+        List<Task> history = historyManager.getHistory();
+        assertEquals(1, history.size());
+        assertEquals(updatedTask, history.get(0));
     }
 }

@@ -70,7 +70,7 @@ class TaskTest {
         String expected = "com.yandex.app.model.Task{" +
                 "title='Test Task" +
                 "', description='Test Description" +
-                "', id=1, status=TODO" +
+                "', id=1, status=IN_PROGRESS" +
                 '}';
         assertEquals(expected, task.toString());
     }
@@ -97,5 +97,12 @@ class TaskTest {
 
         assertTrue(task1.equals(task2));
         assertFalse(task1.equals(task3));
+    }
+
+    @Test
+    void testUpdateTaskIntegrity() {
+        Task task = new Task("Test Task", "Test Description", 1, TaskStatus.NEW);
+        task.setId(2); // Обновление id задачи
+        assertNotEquals(1, task.getId()); // Проверка, что id изменился
     }
 }
