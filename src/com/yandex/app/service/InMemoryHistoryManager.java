@@ -75,6 +75,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             }
             linkLast(task.getId());
             map.put(task.getId(), tail);
+            history.add(task); // Добавляем задачу в список history
         } else {
             System.out.println("Попытка добавления несуществующей задачи в историю");
         }
@@ -91,9 +92,12 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void updateHistory(Task task) {
-        history.add(task);  // Добавление задачи в конец истории
-        remove(task.getId());
+        if (task != null) {
+            remove(task.getId()); // Удаляем старую версию задачи
+            add(task); // Добавляем новую версию задачи в конец истории
+        }
     }
+
 
     @Override
     public void remove(int id) {
@@ -105,9 +109,10 @@ public class InMemoryHistoryManager implements HistoryManager {
             }
         }
         if (taskToRemove != null) {
-            history.remove(taskToRemove);
+            history.remove(taskToRemove); // Удаляем задачу из списка history
         }
     }
+
 
 }
 
