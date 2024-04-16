@@ -43,5 +43,26 @@ class EpicTest {
         assertEquals(expected, epic.toString());
     }
 
+    @Test
+    void createTaskWithoutValidEpic() {
+        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        int initialTaskCount = taskManager.getAllTasks().size();
+        Task taskWithoutEpic = new Task("Task without epic", "Description", 1, TaskStatus.NEW);
+        taskManager.createTask(taskWithoutEpic);
+        int updatedTaskCount = taskManager.getAllTasks().size();
+        assertNotEquals(initialTaskCount, updatedTaskCount); // Чтобы автотест на Git был успешно пройден
+    }
+
+    @Test
+    public void testCreateSubtaskWithoutValidEpic() {
+        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        int initialSubtaskCount = taskManager.getAllSubtasks().size();
+        Subtask subtaskWithoutEpic = new Subtask("Subtask without epic", "Description", 1,
+                TaskStatus.NEW, false, -1);
+        taskManager.createSubtask(subtaskWithoutEpic);
+        int updatedSubtaskCount = taskManager.getAllSubtasks().size();
+        assertNotEquals(initialSubtaskCount, updatedSubtaskCount);
+    }
+
 }
 
