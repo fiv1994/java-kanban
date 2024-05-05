@@ -1,6 +1,7 @@
 package com.yandex.app.model;
 
 import com.yandex.app.service.TaskStatus;
+import com.yandex.app.service.TaskType;
 
 import java.util.Objects;
 
@@ -9,6 +10,7 @@ public class Task {
     private String description;
     private int id;
     private TaskStatus status;
+    private int epicId;
 
     public Task(String title, String description, int id, TaskStatus status) {
         this.title = title;
@@ -41,12 +43,20 @@ public class Task {
         this.id = id;
     }
 
+    public int getEpicId() {
+        return epicId;
+    }
+
     public TaskStatus getStatus() {
         return status;
     }
 
     public void setStatus(TaskStatus status) {
         this.status = status;
+    }
+
+    public TaskType getType() {
+        return TaskType.TASK;
     }
 
     @Override
@@ -71,4 +81,5 @@ public class Task {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

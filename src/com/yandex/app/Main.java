@@ -55,9 +55,9 @@ public class Main {
 
         // Создание подзадач для эпика
         Subtask subtask1 = new Subtask("Подзадача 1", "Описание подзадачи 1",
-                                        3, TaskStatus.NEW, false, 1);
+                                        3, TaskStatus.NEW, 1);
         Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2",
-                                        4, TaskStatus.IN_PROGRESS, true, 1);
+                                        4, TaskStatus.IN_PROGRESS, 1);
 
         // Создание эпиков
         Epic epic1 = new Epic("Эпик 1", "Описание эпика 1", 5,

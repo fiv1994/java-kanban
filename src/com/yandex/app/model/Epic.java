@@ -1,6 +1,9 @@
 package com.yandex.app.model;
 
 import com.yandex.app.service.TaskStatus;
+import com.yandex.app.service.InMemoryTaskManager;
+import com.yandex.app.service.TaskType;
+
 import java.util.List;
 
 public class Epic extends Task {
@@ -17,6 +20,18 @@ public class Epic extends Task {
 
     public void setSubtaskIds(List<Integer> subtaskIds) {
         this.subtaskIds = subtaskIds;
+        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        for (Integer subtaskId : subtaskIds) {
+            Subtask subtask = taskManager.getSubtask(subtaskId);
+            if (subtask != null) {
+                taskManager.updateSubtask(subtask);
+            }
+        }
+    }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC;
     }
 
     @Override
@@ -29,4 +44,5 @@ public class Epic extends Task {
                 ", subtaskIds=" + subtaskIds +
                 '}';
     }
+
 }
