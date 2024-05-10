@@ -133,11 +133,9 @@ class FileBackedTaskManagerTest {
         Task task1 = new Task("Задача 1", "Описание задачи 1", 1, TaskStatus.NEW);
         Subtask subtask1 = new Subtask("Подзадача 1", "Описание подзадачи 1", 2, TaskStatus.NEW,
                 1);
-        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1", 3, TaskStatus.NEW, List.of(2));
 
         taskManager.createTask(task1);
         taskManager.createSubtask(subtask1);
-        taskManager.createEpic(epic1);
 
         // Получаем историю задач
         List<Task> historyBefore = taskManager.getHistory();
