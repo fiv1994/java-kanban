@@ -85,6 +85,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public void save() {
         try {
             String csvData = generateCSVData();
+            if (!Files.exists(saveFile.toPath())) {
+                Files.createFile(saveFile.toPath());
+            }
             Files.writeString(saveFile.toPath(), csvData);
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка сохранения задачи в файл: " + e.getMessage());

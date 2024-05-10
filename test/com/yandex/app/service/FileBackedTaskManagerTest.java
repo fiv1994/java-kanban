@@ -12,6 +12,7 @@ import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -117,5 +118,40 @@ class FileBackedTaskManagerTest {
         tempFile.setReadOnly();
 
         assertThrows(ManagerSaveException.class, manager::save);
+    }
+
+    @Test
+    void testHistoryRecovery() throws IOException {
+        // Создаем временный файл для теста
+        File tempFile = Files.createTempFile("test", ".csv").toFile();
+        tempFile.deleteOnExit();
+
+        // Создаем экземпляр FileBackedTaskManager
+        FileBackedTaskManager taskManager = new FileBackedTaskManager(tempFile);
+
+        // Добавляем задачи и подзадачи
+        Task task1 = new Task("Задача 1", "Описание задачи 1", 1, TaskStatus.NEW);
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание подзадачи 1", 2, TaskStatus.NEW,
+                1);
+        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1", 3, TaskStatus.NEW, List.of(2));
+
+        taskManager.createTask(task1);
+        taskManager.createSubtask(subtask1);
+        taskManager.createEpic(epic1);
+
+        // Получаем историю задач
+        List<Task> historyBefore = taskManager.getHistory();
+
+        // Сохраняем состояние в файл
+        taskManager.save();
+
+        // Загружаем состояние из файла
+        FileBackedTaskManager loadedTaskManager = FileBackedTaskManager.loadFromFile(tempFile);
+
+        // Получаем историю задач после загрузки из файла
+        List<Task> historyAfter = loadedTaskManager.getHistory();
+
+        // Проверяем, что история задач до и после сохранения/загрузки совпадает
+        assertEquals(historyBefore, historyAfter);
     }
 }

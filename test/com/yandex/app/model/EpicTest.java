@@ -1,10 +1,9 @@
 package com.yandex.app.model;
 
+import java.io.File;
 import java.util.List;
 
-import com.yandex.app.service.InMemoryTaskManager;
-import com.yandex.app.service.TaskManager;
-import com.yandex.app.service.TaskStatus;
+import com.yandex.app.service.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,6 +61,34 @@ class EpicTest {
         taskManager.createSubtask(subtaskWithoutEpic);
         int updatedSubtaskCount = taskManager.getAllSubtasks().size();
         assertNotEquals(initialSubtaskCount, updatedSubtaskCount);
+    }
+
+    @Test
+    void loadFromCorruptedFile() {
+        // Предполагаем, что файл поврежден и содержит некорректные данные
+        File corruptedFile = new File("path/to/corruptedFile.csv");
+        Exception exception = assertThrows(ManagerLoadException.class, () -> {
+            FileBackedTaskManager.loadFromFile(corruptedFile);
+        });
+
+        String expectedMessage = "Ошибка загрузки данных из файла";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void loadFromIncompleteFile() {
+        // Предполагаем, что файл неполный (например, отсутствуют некоторые данные)
+        File incompleteFile = new File("path/to/incompleteFile.csv");
+        Exception exception = assertThrows(ManagerLoadException.class, () -> {
+            FileBackedTaskManager.loadFromFile(incompleteFile);
+        });
+
+        String expectedMessage = "Ошибка загрузки данных из файла";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
 }
