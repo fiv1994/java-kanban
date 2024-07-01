@@ -1,12 +1,17 @@
 package com.yandex.app.model;
 
 import com.yandex.app.service.TaskStatus;
+import com.yandex.app.service.TaskType;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Subtask extends Task {
     private int epicId;
 
-    public Subtask(String title, String description, int taskId, TaskStatus status, boolean completed, int epicId) {
-        super(title, description, taskId, status);
+    public Subtask(String title, String description, int taskId, int epicId, Duration duration, LocalDateTime startTime,
+                   TaskStatus status) {
+        super(title, description, taskId, duration, startTime, status);
         this.epicId = epicId;
     }
 
@@ -19,6 +24,11 @@ public class Subtask extends Task {
     }
 
     @Override
+    public TaskType getType() {
+        return TaskType.SUBTASK;
+    }
+
+    @Override
     public String toString() {
         return "com.yandex.app.model.Subtask{" +
                 "title='" + getTitle() + '\'' +
@@ -28,4 +38,5 @@ public class Subtask extends Task {
                 ", epicId=" + epicId +
                 '}';
     }
+
 }
