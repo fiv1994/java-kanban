@@ -8,6 +8,8 @@ import com.yandex.app.service.Managers;
 import com.yandex.app.service.TaskManager;
 import com.yandex.app.service.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,14 +52,16 @@ public class Main {
         InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
 
         // Создание задач
-        Task task1 = new Task("Задача 1", "Описание задачи 1", 1, TaskStatus.NEW);
-        Task task2 = new Task("Задача 2", "Описание задачи 2", 2, TaskStatus.IN_PROGRESS);
+        Task task1 = new Task("Задача 1", "Описание задачи 1", 1, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.NEW);
+        Task task2 = new Task("Задача 2", "Описание задачи 2", 2, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.IN_PROGRESS);
 
         // Создание подзадач для эпика
         Subtask subtask1 = new Subtask("Подзадача 1", "Описание подзадачи 1",
-                                        3, TaskStatus.NEW, 1);
+                                        3, 1, Duration.ZERO, LocalDateTime.MIN, TaskStatus.NEW);
         Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2",
-                                        4, TaskStatus.IN_PROGRESS, 1);
+                                        4, 1, Duration.ZERO, LocalDateTime.MIN, TaskStatus.IN_PROGRESS);
 
         // Создание эпиков
         Epic epic1 = new Epic("Эпик 1", "Описание эпика 1", 5,

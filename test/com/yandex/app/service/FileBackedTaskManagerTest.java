@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,7 +36,7 @@ class FileBackedTaskManagerTest {
 
     @AfterEach
     void tearDown() {
-        if (tempFile != null && tempFile.exists()) {
+        if (tempFile != null || tempFile.exists()) {
             tempFile.delete();
         }
     }
@@ -57,8 +59,10 @@ class FileBackedTaskManagerTest {
 
     @Test
     void saveAndLoadMultipleTasks() {
-        Task task1 = new Task("Task 1", "Description 1", 1, TaskStatus.NEW);
-        Task task2 = new Task("Task 2", "Description 2", 2, TaskStatus.IN_PROGRESS);
+        Task task1 = new Task("Task 1", "Description 1", 1, Duration.ofMinutes(0), LocalDateTime.now(),
+                TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Description 2", 2, Duration.ofMinutes(1), LocalDateTime.now(),
+                TaskStatus.IN_PROGRESS);
 
         manager.createTask(task1);
         manager.createTask(task2);
@@ -76,13 +80,15 @@ class FileBackedTaskManagerTest {
 
     @Test
     void saveAndLoadMultipleTasksAndSubtasks() {
-        Task task1 = new Task("Task 1", "Description 1", 1, TaskStatus.NEW);
-        Task task2 = new Task("Task 2", "Description 2", 2, TaskStatus.IN_PROGRESS);
+        Task task1 = new Task("Task 1", "Description 1", 1, Duration.ZERO, LocalDateTime.now(),
+                TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Description 2", 2, Duration.ZERO, LocalDateTime.now(),
+                TaskStatus.IN_PROGRESS);
 
-        Subtask subtask1 = new Subtask("Subtask 1", "Subtask Description 1", 11,
-                                        TaskStatus.DONE, 1);
-        Subtask subtask2 = new Subtask("Subtask 2", "Subtask Description 2", 12,
-                                        TaskStatus.NEW, 1);
+        Subtask subtask1 = new Subtask("Subtask 1", "Subtask Description 1", 11, 1,
+                Duration.ZERO, LocalDateTime.now(), TaskStatus.DONE);
+        Subtask subtask2 = new Subtask("Subtask 2", "Subtask Description 2", 12, 1,
+                Duration.ZERO, LocalDateTime.now(), TaskStatus.NEW);
 
         manager.createTask(task1);
         manager.createTask(task2);
@@ -114,7 +120,8 @@ class FileBackedTaskManagerTest {
 
     @Test
     void saveToFileIOExceptionThrowsException() {
-        manager.createTask(new Task("Task 1", "Description 1", 1, TaskStatus.NEW));
+        manager.createTask(new Task("Task 1", "Description 1", 1, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.NEW));
         tempFile.setReadOnly();
 
         assertThrows(ManagerSaveException.class, manager::save);
@@ -130,9 +137,10 @@ class FileBackedTaskManagerTest {
         FileBackedTaskManager taskManager = new FileBackedTaskManager(tempFile);
 
         // Добавляем задачи и подзадачи
-        Task task1 = new Task("Задача 1", "Описание задачи 1", 1, TaskStatus.NEW);
-        Subtask subtask1 = new Subtask("Подзадача 1", "Описание подзадачи 1", 2, TaskStatus.NEW,
-                1);
+        Task task1 = new Task("Задача 1", "Описание задачи 1", 1, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.NEW);
+        Subtask subtask1 = new Subtask("Подзадача 1", "Описание подзадачи 1", 2, 1,
+                Duration.ZERO, LocalDateTime.MIN, TaskStatus.NEW);
 
         taskManager.createTask(task1);
         taskManager.createSubtask(subtask1);
@@ -151,5 +159,6 @@ class FileBackedTaskManagerTest {
 
         // Проверяем, что история задач до и после сохранения/загрузки совпадает
         assertEquals(historyBefore, historyAfter);
+
     }
 }

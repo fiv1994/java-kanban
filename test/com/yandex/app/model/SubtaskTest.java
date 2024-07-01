@@ -7,6 +7,9 @@ import com.yandex.app.service.TaskStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SubtaskTest {
@@ -16,7 +19,8 @@ class SubtaskTest {
     @BeforeEach
     void setUp() {
         taskManager = new InMemoryTaskManager(); // Создание экземпляра InMemoryTaskManager
-        subtask = new Subtask("Test Subtask", "Test Description", 1, TaskStatus.NEW, 123);
+        subtask = new Subtask("Test Subtask", "Test Description", 1, 123, Duration.ZERO,
+                LocalDateTime.MIN, TaskStatus.NEW);
     }
 
     @Test
@@ -44,8 +48,8 @@ class SubtaskTest {
     @Test
     void testSetSelfAsEpic() {
         InMemoryTaskManager taskManager = new InMemoryTaskManager();
-        Subtask subtask = new Subtask("Test Subtask", "Test Description", 1, TaskStatus.NEW,
-                123);
+        Subtask subtask = new Subtask("Test Subtask", "Test Description", 1, 123,
+                Duration.ZERO, LocalDateTime.MIN, TaskStatus.NEW);
         subtask.setEpicId(1); // Попытка сделать самого себя эпиком
         assertFalse(taskManager.isValidSubtask(subtask));
     }

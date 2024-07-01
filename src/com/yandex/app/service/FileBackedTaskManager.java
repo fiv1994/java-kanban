@@ -4,12 +4,13 @@ import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
-import java.io.BufferedReader;
 import java.nio.file.Paths;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,12 +84,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public void save() {
-        try {
+        try (Writer writer = new BufferedWriter(new FileWriter(saveFile))) {
             String csvData = generateCSVData();
             if (!Files.exists(saveFile.toPath())) {
                 Files.createFile(saveFile.toPath());
             }
-            Files.writeString(saveFile.toPath(), csvData);
+            // Files.writeString(saveFile.toPath(), csvData);
+            writer.write(csvData);
+            writer.flush();
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка сохранения задачи в файл: " + e.getMessage());
         }
@@ -112,21 +115,24 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     continue;
                 }
                 String[] parts = line.split(",");
-                if (parts.length < 5) { // Проверка на минимальное количество элементов
+                if (parts.length < 6) { // Проверка на минимальное количество элементов
                     continue; // Пропускаем строку, если элементов недостаточно
                 }
                 int id = Integer.parseInt(parts[0]);
                 String title = parts[1];
                 String description = parts[2];
                 int epicId = Integer.parseInt(parts[3]);
-                TaskStatus status = parseStatus(parts[4]); // Преобразование строки в TaskStatus
+                Duration duration = Duration.parse(parts[4]);
+                LocalDateTime startTime = LocalDateTime.parse(parts[5], DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                TaskStatus status = parseStatus(parts[6]); // Преобразование строки в TaskStatus
                 // Получаем список ID подзадач для текущего эпика из HashMap
+
                 List<Integer> subtaskIds = epicSubtaskMap.getOrDefault(epicId, new ArrayList<>());
                 if (currentType.equals("Задачи")) {
-                    Task task = new Task(title, description, id, status);
+                    Task task = new Task(title, description, id, duration, startTime, status);
                     manager.createTask(task);
                 } else if (currentType.equals("Подзадачи")) {
-                    Subtask subtask = new Subtask(title, description, id, status, epicId);
+                    Subtask subtask = new Subtask(title, description, id, epicId, duration, startTime, status);
                     manager.createSubtask(subtask);
                     // Добавляем ID подзадачи в список
                     subtaskIds.add(id);
@@ -137,10 +143,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     manager.createEpic(epic);
                 }
             }
+
         } catch (IOException | NumberFormatException e) {
             throw new ManagerLoadException("Ошибка загрузки данных из файла: " + e.getMessage());
         }
+        manager.updateEpicStatuses();
         return manager;
+    }
+
+    private void updateEpicStatuses() {
+        for (Epic epic : getAllEpics()) {
+            updateEpic(epic);
+        }
     }
 
     private static TaskStatus parseStatus(String status) {
@@ -165,8 +179,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         if (!allTasks.isEmpty()) {
             csvData.append("Задачи:").append(System.lineSeparator());
             for (Task task : allTasks) {
-                csvData.append(task.getId()).append(",").append(task.getTitle()).append(",").append(task.getDescription())
-                        .append(",").append(task.getEpicId()).append(",").append(task.getStatus())
+                csvData.append(task.getId()).append(",")
+                        .append(task.getTitle().replace(",", "\\,")).append(",")
+                        .append(task.getDescription().replace(",", "\\,")).append(",")
+                        .append(task.getEpicId()).append(",")
+                        .append(task.getDuration()).append(",")
+                        .append(task.getStartTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)).append(",")
+                        .append(task.getStatus())
                         .append(System.lineSeparator());
             }
         }
@@ -174,21 +193,30 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         if (!allSubtasks.isEmpty()) {
             csvData.append("Подзадачи:").append(System.lineSeparator());
             for (Subtask subtask : allSubtasks) {
-                csvData.append(subtask.getId()).append(",").append(subtask.getTitle()).append(",")
-                        .append(subtask.getDescription()).append(",").append(subtask.getEpicId()).append(",")
-                        .append(subtask.getStatus()).append(System.lineSeparator());
+                csvData.append(subtask.getId()).append(",")
+                        .append(subtask.getTitle().replace(",", "\\,")).append(",")
+                        .append(subtask.getDescription().replace(",", "\\,")).append(",")
+                        .append(subtask.getEpicId()).append(",")
+                        .append(subtask.getDuration()).append(",")
+                        .append(subtask.getStartTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)).append(",")
+                        .append(subtask.getStatus())
+                        .append(System.lineSeparator());
             }
         }
 
         if (!allEpics.isEmpty()) {
             csvData.append("Эпики:").append(System.lineSeparator());
             for (Epic epic : allEpics) {
-                csvData.append(epic.getId()).append(",").append(epic.getTitle()).append(",")
-                        .append(epic.getDescription()).append(",").append(epic.getStatus()).append(",")
-                        .append(epic.getSubtaskIds()).append(System.lineSeparator());
+                csvData.append(epic.getId()).append(",")
+                        .append(epic.getTitle().replace(",", "\\,")).append(",")
+                        .append(epic.getDescription().replace(",", "\\,")).append(",")
+                        .append(epic.getStatus()).append(",")
+                        .append(epic.getSubtaskIds().toString().replace("", ""))
+                        .append(System.lineSeparator());
             }
         }
         return csvData.toString();
     }
+
 
 }

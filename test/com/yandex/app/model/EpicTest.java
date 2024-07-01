@@ -1,6 +1,8 @@
 package com.yandex.app.model;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.yandex.app.service.*;
@@ -17,7 +19,8 @@ class EpicTest {
     @BeforeEach
     void setUp() {
         taskManager = new InMemoryTaskManager(); // Создание экземпляра InMemoryTaskManager
-        epic = new Epic("Test Epic", "Test Description", 1, TaskStatus.IN_PROGRESS, List.of(1, 2, 3));
+        epic = new Epic("Test Epic", "Test Description", 1, TaskStatus.IN_PROGRESS,
+                List.of(1, 2, 3));
     }
 
     @Test
@@ -46,7 +49,8 @@ class EpicTest {
     void createTaskWithoutValidEpic() {
         InMemoryTaskManager taskManager = new InMemoryTaskManager();
         int initialTaskCount = taskManager.getAllTasks().size();
-        Task taskWithoutEpic = new Task("Task without epic", "Description", 1, TaskStatus.NEW);
+        Task taskWithoutEpic = new Task("Task without epic", "Description", 1, Duration.ZERO,
+                LocalDateTime.MIN, TaskStatus.NEW);
         taskManager.createTask(taskWithoutEpic);
         int updatedTaskCount = taskManager.getAllTasks().size();
         assertNotEquals(initialTaskCount, updatedTaskCount); // Чтобы автотест на Git был успешно пройден
@@ -56,8 +60,8 @@ class EpicTest {
     public void testCreateSubtaskWithoutValidEpic() {
         InMemoryTaskManager taskManager = new InMemoryTaskManager();
         int initialSubtaskCount = taskManager.getAllSubtasks().size();
-        Subtask subtaskWithoutEpic = new Subtask("Subtask without epic", "Description", 1,
-                TaskStatus.NEW, -1);
+        Subtask subtaskWithoutEpic = new Subtask("Subtask without epic", "Description", 1,-1,
+                Duration.ZERO, LocalDateTime.MIN, TaskStatus.NEW);
         taskManager.createSubtask(subtaskWithoutEpic);
         int updatedSubtaskCount = taskManager.getAllSubtasks().size();
         assertNotEquals(initialSubtaskCount, updatedSubtaskCount);

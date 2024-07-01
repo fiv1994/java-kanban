@@ -6,6 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 class InMemoryTaskManagerTest {
 
     private InMemoryTaskManager taskManager;
@@ -17,8 +20,10 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void testAddAndFindTask() {
-        Task task1 = new Task("Task 1", "Description 1", 1, TaskStatus.NEW);
-        Task task2 = new Task("Task 2", "Description 2", 2, TaskStatus.IN_PROGRESS);
+        Task task1 = new Task("Task 1", "Description 1", 1, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Description 2", 2, Duration.ofMinutes(3), LocalDateTime.now(),
+                TaskStatus.IN_PROGRESS);
 
         taskManager.createTask(task1);
         taskManager.createTask(task2);
