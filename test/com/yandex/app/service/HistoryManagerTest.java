@@ -49,4 +49,48 @@ public class HistoryManagerTest {
         assertEquals(1, history.size());
         assertEquals(updatedTask, history.get(0));
     }
+
+    @Test
+    public void shouldHandleEmptyHistoryCorrectly() {
+        assertTrue(historyManager.getHistory().isEmpty());
+    }
+
+    @Test
+    public void shouldHandleDuplicateEntriesInHistory() {
+        Task task1 = new Task("Task 1", "Description 1", 1, Duration.ZERO,
+                LocalDateTime.now().plusMinutes(100), TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Description 2", 2, Duration.ZERO,
+                LocalDateTime.now().plusMinutes(50), TaskStatus.NEW);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task1); // Добавляем task1 повторно
+
+        List<Task> history = historyManager.getHistory();
+        int firstIndex = history.indexOf(task1);
+        int lastIndex = history.lastIndexOf(task1);
+
+        assertEquals(firstIndex, lastIndex); // Проверяем, что запись в истории не дублируется
+    }
+
+    @Test
+    public void shouldHandleDeletionFromHistoryAtDifferentPositions() {
+        Task task1 = new Task("Task 1", "Description 1", 1, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Description 2", 2, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.NEW);
+        Task task3 = new Task("Task 3", "Description 3", 3, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.NEW);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(task2.getId()); // Удаление из середины
+        List<Task> history = historyManager.getHistory();
+        assertFalse(history.contains(task2));
+        assertTrue(history.contains(task1));
+        assertTrue(history.contains(task3));
+    }
+
 }

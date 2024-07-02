@@ -110,6 +110,26 @@ public class InMemoryTaskManager implements TaskManager {
         return true;
     }
 
+    public boolean doAnyIntervalsOverlap(List<Task> tasks) {
+        for (int i = 0; i < tasks.size(); i++) {
+            for (int j = i + 1; j < tasks.size(); j++) {
+                Task task1 = tasks.get(i);
+                Task task2 = tasks.get(j);
+
+                LocalDateTime start1 = task1.getStartTime();
+                LocalDateTime end1 = start1.plus(task1.getDuration());
+
+                LocalDateTime start2 = task2.getStartTime();
+                LocalDateTime end2 = start2.plus(task2.getDuration());
+
+                if (start1.isBefore(end2) && start2.isBefore(end1)) {
+                    return true; // Пересечение найдено
+                }
+            }
+        }
+        return false; // Пересечений нет
+    }
+
     @Override
     public int getNextTaskId() {
         return taskIdCounter++;

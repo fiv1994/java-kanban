@@ -70,12 +70,14 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void add(Task task) {
         if (task != null) {
-            if (map.containsKey(task.getId())) {
-                removeNode(map.get(task.getId()));
+            if (!history.contains(task)) { // Добавляем проверку наличия задачи в истории
+                if (map.containsKey(task.getId())) {
+                    removeNode(map.get(task.getId()));
+                }
+                linkLast(task.getId());
+                map.put(task.getId(), tail);
+                history.add(task); // Добавляем задачу, только если её нет в истории
             }
-            linkLast(task.getId());
-            map.put(task.getId(), tail);
-            history.add(task); // Добавляем задачу в список history
         } else {
             System.out.println("Попытка добавления несуществующей задачи в историю");
         }

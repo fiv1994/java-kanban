@@ -11,6 +11,8 @@ import com.yandex.app.service.TaskStatus;
 import org.junit.jupiter.api.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
@@ -36,7 +38,7 @@ class FileBackedTaskManagerTest {
 
     @AfterEach
     void tearDown() {
-        if (tempFile != null || tempFile.exists()) {
+        if (tempFile != null && tempFile.exists()) {
             tempFile.delete();
         }
     }
@@ -59,10 +61,10 @@ class FileBackedTaskManagerTest {
 
     @Test
     void saveAndLoadMultipleTasks() {
-        Task task1 = new Task("Task 1", "Description 1", 1, Duration.ofMinutes(0), LocalDateTime.now(),
-                TaskStatus.NEW);
-        Task task2 = new Task("Task 2", "Description 2", 2, Duration.ofMinutes(1), LocalDateTime.now(),
-                TaskStatus.IN_PROGRESS);
+        Task task1 = new Task("Task 1", "Description 1", 1, Duration.ofMinutes(5),
+                LocalDateTime.now().plusMinutes(60), TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Description 2", 2, Duration.ofMinutes(10),
+                LocalDateTime.now().plusMinutes(100), TaskStatus.IN_PROGRESS);
 
         manager.createTask(task1);
         manager.createTask(task2);
@@ -80,15 +82,15 @@ class FileBackedTaskManagerTest {
 
     @Test
     void saveAndLoadMultipleTasksAndSubtasks() {
-        Task task1 = new Task("Task 1", "Description 1", 1, Duration.ZERO, LocalDateTime.now(),
-                TaskStatus.NEW);
-        Task task2 = new Task("Task 2", "Description 2", 2, Duration.ZERO, LocalDateTime.now(),
-                TaskStatus.IN_PROGRESS);
+        Task task1 = new Task("Task 1", "Description 1", 1, Duration.ZERO,
+                LocalDateTime.now().plusMinutes(140), TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Description 2", 2, Duration.ZERO,
+                LocalDateTime.now().plusMinutes(200), TaskStatus.IN_PROGRESS);
 
         Subtask subtask1 = new Subtask("Subtask 1", "Subtask Description 1", 11, 1,
-                Duration.ZERO, LocalDateTime.now(), TaskStatus.DONE);
+                Duration.ZERO, LocalDateTime.now().plusMinutes(20), TaskStatus.DONE);
         Subtask subtask2 = new Subtask("Subtask 2", "Subtask Description 2", 12, 1,
-                Duration.ZERO, LocalDateTime.now(), TaskStatus.NEW);
+                Duration.ZERO, LocalDateTime.now().plusMinutes(40), TaskStatus.NEW);
 
         manager.createTask(task1);
         manager.createTask(task2);
@@ -161,4 +163,24 @@ class FileBackedTaskManagerTest {
         assertEquals(historyBefore, historyAfter);
 
     }
+
+    @Test
+    public void shouldNotThrowExceptionWhenTemporaryFileExists() {
+        // Убедимся, что файл действительно был создан
+        assertTrue(tempFile.exists());
+
+        // Тестирование открытия файла без выброса исключения
+        File finalTempFile = tempFile;
+        assertDoesNotThrow(() -> new FileInputStream(finalTempFile),
+                "Открытие существующего временного файла не должно приводить к исключению");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenFileNotFound() {
+        assertThrows(FileNotFoundException.class, () -> {
+            // Попытка открыть файл, который не существует
+            new FileInputStream("non_existent_file.txt");
+        }, "Попытка открыть несуществующий файл должна приводить к исключению FileNotFoundException");
+    }
+
 }

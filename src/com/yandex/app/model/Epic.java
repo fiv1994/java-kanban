@@ -73,6 +73,35 @@ public class Epic extends Task {
         this.setDurationInMinutes(totalMinutes);
     }
 
+    public void updateStatusBasedOnSubtasks(List<Subtask> subtasks) {
+        boolean allNew = true;
+        boolean allDone = true;
+
+        for (Subtask subtask : subtasks) {
+            switch (subtask.getStatus()) {
+                case IN_PROGRESS:
+                    this.setStatus(TaskStatus.IN_PROGRESS);
+                    allNew = false;
+                    allDone = false;
+                    break;
+                case DONE:
+                    allNew = false;
+                    break;
+                case NEW:
+                    allDone = false;
+                    break;
+            }
+        }
+
+        if (allNew) {
+            this.setStatus(TaskStatus.NEW);
+        } else if (allDone) {
+            this.setStatus(TaskStatus.DONE);
+        } else {
+            this.setStatus(TaskStatus.IN_PROGRESS); // Установка статуса эпика, если есть разные статусы подзадач
+        }
+    }
+
     @Override
     public TaskType getType() {
         return TaskType.EPIC;
