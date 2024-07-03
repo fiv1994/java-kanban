@@ -1,4 +1,4 @@
-package com.yandex.app.service;
+package com.yandex.app.exceptions;
 
 public class ManagerLoadException extends RuntimeException {
     public ManagerLoadException(String message) {

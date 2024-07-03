@@ -1,12 +1,9 @@
 package com.yandex.app.service;
 
-import com.yandex.app.model.Epic;
+import com.yandex.app.exceptions.ManagerSaveException;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
-import com.yandex.app.service.FileBackedTaskManager;
-import com.yandex.app.service.ManagerLoadException;
-import com.yandex.app.service.ManagerSaveException;
-import com.yandex.app.service.TaskStatus;
+import com.yandex.app.exceptions.ManagerLoadException;
 
 import org.junit.jupiter.api.*;
 
@@ -139,10 +136,10 @@ class FileBackedTaskManagerTest {
         FileBackedTaskManager taskManager = new FileBackedTaskManager(tempFile);
 
         // Добавляем задачи и подзадачи
-        Task task1 = new Task("Задача 1", "Описание задачи 1", 1, Duration.ZERO, LocalDateTime.MIN,
-                TaskStatus.NEW);
+        Task task1 = new Task("Задача 1", "Описание задачи 1", 1, Duration.ofMinutes(10),
+                LocalDateTime.now().plusMinutes(20), TaskStatus.NEW);
         Subtask subtask1 = new Subtask("Подзадача 1", "Описание подзадачи 1", 2, 1,
-                Duration.ZERO, LocalDateTime.MIN, TaskStatus.NEW);
+                Duration.ofMinutes(20), LocalDateTime.now().plusMinutes(40), TaskStatus.NEW);
 
         taskManager.createTask(task1);
         taskManager.createSubtask(subtask1);

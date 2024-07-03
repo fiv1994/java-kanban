@@ -14,10 +14,13 @@ public class Epic extends Task {
     private Duration duration;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private InMemoryTaskManager taskManager;
 
-    public Epic(String title, String description, int taskId, TaskStatus status, List<Integer> subtaskIds) {
-        super(title, description, taskId, Duration.ZERO, LocalDateTime.MIN, status);
+    public Epic(String title, String description, int taskId, TaskStatus status, List<Integer> subtaskIds,
+                Duration duration, LocalDateTime startTime, InMemoryTaskManager taskManager) {
+        super(title, description, taskId, duration, startTime, status);
         this.subtaskIds = subtaskIds;
+        this.taskManager = taskManager;
     }
 
     public List<Integer> getSubtaskIds() {
@@ -26,7 +29,6 @@ public class Epic extends Task {
 
     public void setSubtaskIds(List<Integer> subtaskIds) {
         this.subtaskIds = subtaskIds;
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
         for (Integer subtaskId : subtaskIds) {
             Subtask subtask = taskManager.getSubtask(subtaskId);
             if (subtask != null) {

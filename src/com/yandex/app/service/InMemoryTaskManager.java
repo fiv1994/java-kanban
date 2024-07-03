@@ -72,7 +72,9 @@ public class InMemoryTaskManager implements TaskManager {
         prioritizedTasks.add(task);
 
         // Проверяем, не нарушает ли добавление порядка задач
-        assert isTasksSorted() : "Порядок задач нарушен после обновления";
+        if (!isTasksSorted()) {
+            throw new IllegalStateException("Порядок задач нарушен после обновления");
+        }
     }
 
     private boolean isTasksSorted() {
@@ -194,7 +196,7 @@ public class InMemoryTaskManager implements TaskManager {
         boolean isOverlapping = getPrioritizedTasks().stream()
                 .anyMatch(existingTask -> isOverlapping(task, existingTask));
         if (isOverlapping) {
-            System.out.println("Задача пересекается по времени выполнения с другой задачей.");
+            throw new RuntimeException("Задача пересекается по времени выполнения с другой задачей.");
         } else {
             taskMap.put(task.getId(), task);
             // Обновляем TreeSet с приоритетными задачами, если это необходимо
@@ -208,7 +210,7 @@ public class InMemoryTaskManager implements TaskManager {
         boolean isOverlapping = getPrioritizedTasks().stream()
                 .anyMatch(existingSubtask -> isOverlapping(subtask, existingSubtask));
         if (isOverlapping) {
-            System.out.println("Задача пересекается по времени выполнения с другой задачей.");
+            throw new RuntimeException("Задача пересекается по времени выполнения с другой задачей.");
         } else {
             subtaskMap.put(subtask.getId(), subtask);
             // Обновляем TreeSet с приоритетными задачами, если это необходимо

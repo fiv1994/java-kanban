@@ -79,7 +79,7 @@ public class InMemoryHistoryManager implements HistoryManager {
                 history.add(task); // Добавляем задачу, только если её нет в истории
             }
         } else {
-            System.out.println("Попытка добавления несуществующей задачи в историю");
+            throw new IllegalArgumentException("Попытка добавления несуществующей задачи в историю");
         }
     }
 

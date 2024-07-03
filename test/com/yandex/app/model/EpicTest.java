@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.yandex.app.exceptions.ManagerLoadException;
 import com.yandex.app.service.*;
 
 import org.junit.jupiter.api.Test;
@@ -18,9 +19,9 @@ class EpicTest {
 
     @BeforeEach
     void setUp() {
-        taskManager = new InMemoryTaskManager(); // Создание экземпляра InMemoryTaskManager
+        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager(); // Создание экземпляра InMemoryTaskManager
         epic = new Epic("Test Epic", "Test Description", 1, TaskStatus.IN_PROGRESS,
-                List.of(1, 2, 3));
+                List.of(1, 2, 3), Duration.ofMinutes(5), LocalDateTime.now().plusMinutes(10), inMemoryTaskManager);
     }
 
     @Test

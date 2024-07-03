@@ -94,7 +94,8 @@ public class TaskManagerTest {
     @Test
     public void epicStatusWithAllNewSubtasks() {
         // Создаем эпик без известного статуса и списка идентификаторов подзадач
-        Epic epic = new Epic("Epic Title", "Epic Description", 1, null, new ArrayList<>());
+        Epic epic = new Epic("Epic Title", "Epic Description", 1, null, new ArrayList<>(),
+                null, null, new InMemoryTaskManager());
         taskManager.createEpic(epic);
 
         // Создаем подзадачи с статусом NEW и добавляем их в taskManager
@@ -128,7 +129,8 @@ public class TaskManagerTest {
 
     @Test
     public void epicStatusWithAllDoneSubtasks() {
-        Epic epic = new Epic("Epic Title", "Epic Description", 1, null, new ArrayList<>());
+        Epic epic = new Epic("Epic Title", "Epic Description", 1, null, new ArrayList<>(),
+                null, null, new InMemoryTaskManager());
         taskManager.createEpic(epic);
 
         Subtask subtask1 = new Subtask("Subtask 1", "Description 1", 2, epic.getId(), Duration.ZERO,
@@ -156,7 +158,8 @@ public class TaskManagerTest {
 
     @Test
     public void epicStatusWithNewAndDoneSubtasks() {
-        Epic epic = new Epic("Epic Title", "Epic Description", 1, null, new ArrayList<>());
+        Epic epic = new Epic("Epic Title", "Epic Description", 1, null, new ArrayList<>(),
+                null, null, new InMemoryTaskManager());
         taskManager.createEpic(epic);
 
         Subtask subtask1 = new Subtask("Subtask 1", "Description 1", 2, epic.getId(), Duration.ZERO,
@@ -184,7 +187,8 @@ public class TaskManagerTest {
 
     @Test
     public void epicStatusWithSubtasksInProgress() {
-        Epic epic = new Epic("Epic Title", "Epic Description", 1, null, new ArrayList<>());
+        Epic epic = new Epic("Epic Title", "Epic Description", 1, null, new ArrayList<>(),
+                null, null, new InMemoryTaskManager());
         taskManager.createEpic(epic);
 
         Subtask subtask1 = new Subtask("Subtask 1", "Description 1", 2, epic.getId(), Duration.ZERO,

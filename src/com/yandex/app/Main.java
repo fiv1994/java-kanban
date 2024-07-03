@@ -64,10 +64,10 @@ public class Main {
                                         4, 1, Duration.ZERO, LocalDateTime.MIN, TaskStatus.IN_PROGRESS);
 
         // Создание эпиков
-        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1", 5,
-                                                TaskStatus.NEW, new ArrayList<>());
-        Epic epic2 = new Epic("Эпик 2", "Описание эпика 2", 6,
-                                                TaskStatus.IN_PROGRESS, new ArrayList<>());
+        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1", 5, TaskStatus.NEW, new ArrayList<>(),
+                Duration.ofMinutes(10), LocalDateTime.now().plusMinutes(10), inMemoryTaskManager);
+        Epic epic2 = new Epic("Эпик 2", "Описание эпика 2", 6, TaskStatus.IN_PROGRESS,
+                new ArrayList<>(), Duration.ofMinutes(10), LocalDateTime.now().plusMinutes(50), inMemoryTaskManager);
 
         // Добавление задач и эпиков в com.yandex.app.service.TaskManager
         taskManager.createTask(subtask1);

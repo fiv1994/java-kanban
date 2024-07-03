@@ -1,5 +1,7 @@
 package com.yandex.app.service;
 
+import com.yandex.app.exceptions.ManagerLoadException;
+import com.yandex.app.exceptions.ManagerSaveException;
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
@@ -17,6 +19,7 @@ import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File saveFile;
+    private InMemoryTaskManager taskManager;
 
     public FileBackedTaskManager(File saveFile) {
         super();
@@ -139,7 +142,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     // Обновляем связи эпика и подзадачи в HashMap
                     epicSubtaskMap.put(epicId, subtaskIds);
                 } else if (currentType.equals("Эпики")) {
-                    Epic epic = new Epic(title, description, id, status, subtaskIds);
+                    Epic epic = new Epic(title, description, id, status, subtaskIds, duration, startTime,
+                            manager.taskManager);
                     manager.createEpic(epic);
                 }
             }
