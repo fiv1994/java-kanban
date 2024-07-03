@@ -1,9 +1,4 @@
-package test.com.yandex.app.service;
-import com.yandex.app.service.Managers;
-import com.yandex.app.service.TaskManager;
-import com.yandex.app.service.HistoryManager;
-import com.yandex.app.service.InMemoryTaskManager;
-import com.yandex.app.service.InMemoryHistoryManager;
+package com.yandex.app.service;
 
 import org.junit.jupiter.api.Test;
 
