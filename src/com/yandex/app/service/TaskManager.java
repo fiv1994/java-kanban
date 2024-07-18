@@ -59,5 +59,6 @@ public interface TaskManager {
     void removeAllSubtasks();
 
     void removeAllEpics();
+
     Set<Task> getPrioritizedTasks();
 }
