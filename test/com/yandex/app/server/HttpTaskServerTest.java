@@ -46,7 +46,7 @@ public class HttpTaskServerTest {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("http://localhost:8080/tasks"))
-                    .POST(HttpRequest.BodyPublishers.ofString("{\"name\":\"Test Task\"}"))
+                    .POST(HttpRequest.BodyPublishers.ofString("{\"title\":\"Test Task\"}"))
                     .build();
             System.out.println("Отправка запроса на добавление задачи"); // Добавление логов
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
