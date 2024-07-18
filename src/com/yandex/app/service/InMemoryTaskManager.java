@@ -191,7 +191,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createTask(Task task) {
+    public Task createTask(Task task) {
         // Проверяем, не пересекается ли новая задача с уже существующими
         boolean isOverlapping = getPrioritizedTasks().stream()
                 .anyMatch(existingTask -> isOverlapping(task, existingTask));
@@ -202,10 +202,11 @@ public class InMemoryTaskManager implements TaskManager {
             // Обновляем TreeSet с приоритетными задачами, если это необходимо
             updatePrioritizedTasks(task);
         }
+        return task;
     }
 
     @Override
-    public void createSubtask(Subtask subtask) {
+    public Subtask createSubtask(Subtask subtask) {
         // Проверяем, не пересекается ли новая задача с уже существующими
         boolean isOverlapping = getPrioritizedTasks().stream()
                 .anyMatch(existingSubtask -> isOverlapping(subtask, existingSubtask));
@@ -216,11 +217,13 @@ public class InMemoryTaskManager implements TaskManager {
             // Обновляем TreeSet с приоритетными задачами, если это необходимо
             updatePrioritizedSubtasks(subtask);
         }
+        return subtask;
     }
 
     @Override
-    public void createEpic(Epic epic) {
+    public Epic createEpic(Epic epic) {
         epicMap.put(epic.getId(), epic);
+        return epic;
     }
 
     @Override
@@ -252,7 +255,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void removeTaskById(int taskId) {
+    public Task removeTaskById(int taskId) {
         Task task = taskMap.get(taskId);
         if (task != null) {
             if (task.getClass().equals(Epic.class)) {
@@ -268,6 +271,44 @@ public class InMemoryTaskManager implements TaskManager {
             }
             taskMap.remove(taskId);
         }
+        return task;
+    }
+
+    @Override
+    public Subtask removeSubtaskById(int subtaskId) {
+        Subtask removedSubtask = subtaskMap.remove(subtaskId);
+        if (removedSubtask != null) {
+            // Удаляем подзадачу из эпика
+            Epic epic = epicMap.get(removedSubtask.getEpicId());
+            if (epic != null) {
+                epic.removeSubtask(removedSubtask);
+                // Обновляем статус эпика после удаления подзадачи
+                epic.updateStatusBasedOnSubtasks(getSubtasksForEpic(epic.getId()));
+            }
+            // Обновляем TreeSet с приоритетными задачами, если это необходимо
+            updatePrioritizedTasksAfterRemoval(removedSubtask);
+        }
+        return removedSubtask;
+    }
+
+    @Override
+    public Epic removeEpicById(int epicId) {
+        Epic removedEpic = epicMap.remove(epicId);
+        if (removedEpic != null) {
+            // Удаляем все подзадачи, связанные с эпиком
+            for (Integer subtaskId : removedEpic.getSubtaskIds()) {
+                subtaskMap.remove(subtaskId);
+                // Обновляем TreeSet с приоритетными задачами, если это необходимо
+                updatePrioritizedTasksAfterRemoval(subtaskMap.get(subtaskId));
+            }
+            // Обновляем TreeSet с приоритетными задачами, если это необходимо
+            updatePrioritizedTasksAfterRemoval(removedEpic);
+        }
+        return removedEpic;
+    }
+
+    private void updatePrioritizedTasksAfterRemoval(Task task) {
+        prioritizedTasks.remove(task);
     }
 
     @Override

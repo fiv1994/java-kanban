@@ -1,8 +1,11 @@
 package com.yandex.app;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
+import com.yandex.app.server.service.DurationAdapter;
 import com.yandex.app.service.InMemoryTaskManager;
 import com.yandex.app.service.Managers;
 import com.yandex.app.service.TaskManager;
@@ -41,6 +44,10 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Duration.class, new DurationAdapter())
+                .create();
+
         // Получение объекта-менеджера задач через Managers.getDefault()
         TaskManager taskManager = Managers.getDefault();
 

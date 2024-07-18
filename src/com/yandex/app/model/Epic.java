@@ -51,6 +51,18 @@ public class Epic extends Task {
         return endTime;
     }
 
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setDurationInMinutes(long minutes) {
+        this.duration = Duration.ofMinutes(minutes);
+    }
+
     public void calculateEpicTimes(InMemoryTaskManager taskManager) {
         List<Subtask> subtasks = subtaskIds.stream()
                 .map(taskManager::getSubtask)
@@ -102,6 +114,12 @@ public class Epic extends Task {
         } else {
             this.setStatus(TaskStatus.IN_PROGRESS); // Установка статуса эпика, если есть разные статусы подзадач
         }
+    }
+
+    public void removeSubtask(Subtask subtask) {
+        subtaskIds.remove(Integer.valueOf(subtask.getId()));
+        calculateEpicTimes(taskManager);
+        updateStatusBasedOnSubtasks(taskManager.getSubtasksForEpic(this.getId()));
     }
 
     @Override

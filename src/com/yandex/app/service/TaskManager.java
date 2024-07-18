@@ -5,6 +5,7 @@ import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
 
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
     int getNextTaskId();
@@ -27,11 +28,11 @@ public interface TaskManager {
 
     List<Epic> getAllEpics();
 
-    void createTask(Task task);
+    Task createTask(Task task);
 
-    void createSubtask(Subtask subtask);
+    Subtask createSubtask(Subtask subtask);
 
-    void createEpic(Epic epic);
+    Epic createEpic(Epic epic);
 
     void updateTask(Task task);
 
@@ -39,7 +40,11 @@ public interface TaskManager {
 
     void updateEpic(Epic epic);
 
-    void removeTaskById(int taskId);
+    Task removeTaskById(int taskId);
+
+    Subtask removeSubtaskById(int subtaskId);
+
+    Epic removeEpicById(int epicId);
 
     List<Task> getTasks(int taskId);
 
@@ -54,4 +59,5 @@ public interface TaskManager {
     void removeAllSubtasks();
 
     void removeAllEpics();
+    Set<Task> getPrioritizedTasks();
 }
