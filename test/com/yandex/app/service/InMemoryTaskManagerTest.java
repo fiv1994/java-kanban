@@ -3,7 +3,6 @@ package com.yandex.app.service;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

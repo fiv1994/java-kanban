@@ -4,9 +4,7 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.yandex.app.server.service.ErrorResponse;
-import com.yandex.app.server.service.HttpMethod;
 import com.yandex.app.service.TaskManager;
-import com.yandex.app.model.Task;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
