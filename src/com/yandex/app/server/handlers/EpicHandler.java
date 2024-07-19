@@ -23,7 +23,7 @@ public class EpicHandler extends BaseHttpHandler {
             case GET -> handleGet(exchange);
             case POST -> handlePost(exchange);
             case DELETE -> handleDelete(exchange);
-            default -> sendNotFound(new ErrorResponse("Неверный HTTP-метод"), exchange, 404);
+            default -> sendNotFound(new ErrorResponse("Объект не найден"), exchange, 404);
         }
     }
 

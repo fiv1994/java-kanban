@@ -9,15 +9,23 @@ import com.yandex.app.service.TaskManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class HttpTaskServer {
     private HttpServer httpServer;
     private final TaskManager taskManager;
     private final Gson gson;
+    private int port;
 
-    public HttpTaskServer(TaskManager taskManager, Gson gson) {
+    public HttpTaskServer(TaskManager taskManager, Gson gson, int port
+    ) {
+        if (taskManager == null || gson == null) {
+            throw new IllegalArgumentException("Значения TaskManager и Gson не могут быть null");
+        }
         this.taskManager = taskManager;
         this.gson = gson;
+        this.port = port;
     }
 
     public void start() throws IOException {
@@ -28,7 +36,7 @@ public class HttpTaskServer {
         httpServer.createContext("/history", new HistoryHandler(taskManager, gson));
         httpServer.createContext("/prioritized", new PrioritizedTasksHandler(taskManager, gson));
         httpServer.start();
-        System.out.println("Сервер запущен");
+        System.out.println("Сервер запущен на порту " + port);
     }
 
     public void stop() {
@@ -39,7 +47,21 @@ public class HttpTaskServer {
     public static void main(String[] args) throws IOException {
         InMemoryTaskManager taskManager = new InMemoryTaskManager();
         Gson gson = new GsonProvider().getGson(); // Использование экземпляра Gson из нового конструктора GsonProvider
-        HttpTaskServer server = new HttpTaskServer(taskManager, gson);
+        int port = 8080;
+
+        System.out.println("Введите номер порта (или нажмите Enter для использования порта " +
+                "по умолчанию: " + port + "):");
+        Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
+        String input = scanner.nextLine();
+        if (!input.isEmpty()) {
+            try {
+                port = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Порт должен быть числом. Используется порт по умолчанию: " + port);
+            }
+        }
+
+        HttpTaskServer server = new HttpTaskServer(taskManager, gson, port);
         server.start();
     }
 }

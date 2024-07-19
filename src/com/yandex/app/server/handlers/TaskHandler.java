@@ -49,8 +49,10 @@ public class TaskHandler extends BaseHttpHandler {
     private void handlePost(HttpExchange exchange) throws IOException {
         try {
             String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-            System.out.println("Request Body: " + requestBody); // Логирование тела запроса
-            Task task = getGson().fromJson(requestBody, Task.class); // Использование экземпляра Gson, переданного в конструктор
+            // Логирование тела запроса:
+            System.out.println("Request Body: " + requestBody);
+            // Использование экземпляра Gson, переданного в конструктор:
+            Task task = getGson().fromJson(requestBody, Task.class);
             Task createdTask = getTaskManager().createTask(task);
             sendText(createdTask, exchange, 200);
         } catch (Exception e) {

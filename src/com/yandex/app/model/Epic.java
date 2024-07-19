@@ -29,6 +29,10 @@ public class Epic extends Task {
 
     public void setSubtaskIds(List<Integer> subtaskIds) {
         this.subtaskIds = subtaskIds;
+        updateSubtasks();
+    }
+
+    private void updateSubtasks() {
         for (Integer subtaskId : subtaskIds) {
             Subtask subtask = taskManager.getSubtask(subtaskId);
             if (subtask != null) {
@@ -63,7 +67,11 @@ public class Epic extends Task {
         this.duration = Duration.ofMinutes(minutes);
     }
 
-    public void calculateEpicTimes(InMemoryTaskManager taskManager) {
+    public void calculateEpicTimes() {
+        if (subtaskIds.isEmpty()) {
+            return;
+        }
+
         List<Subtask> subtasks = subtaskIds.stream()
                 .map(taskManager::getSubtask)
                 .collect(Collectors.toList());
@@ -118,7 +126,7 @@ public class Epic extends Task {
 
     public void removeSubtask(Subtask subtask) {
         subtaskIds.remove(Integer.valueOf(subtask.getId()));
-        calculateEpicTimes(taskManager);
+        calculateEpicTimes();
         updateStatusBasedOnSubtasks(taskManager.getSubtasksForEpic(this.getId()));
     }
 

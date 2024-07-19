@@ -20,13 +20,15 @@ public class HttpTaskServerTest {
     private HttpTaskServer server;
     private TaskManager taskManager;
     private Gson gson;
+    private int port;
 
     @BeforeEach
     public void setUp() throws IOException {
         try {
             taskManager = new InMemoryTaskManager();
             gson = new GsonProvider().getGson(); // Использование экземпляра Gson
-            server = new HttpTaskServer(taskManager, gson);
+            port = 8080;
+            server = new HttpTaskServer(taskManager, gson, port);
             server.start();
         } catch (Exception e) {
             e.printStackTrace();
