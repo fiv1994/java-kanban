@@ -1,14 +1,26 @@
 package com.yandex.app.model;
 
 import com.yandex.app.service.TaskStatus;
+import com.yandex.app.service.InMemoryTaskManager;
+import com.yandex.app.service.TaskType;
+
 import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 public class Epic extends Task {
     private List<Integer> subtaskIds;
+    private Duration duration;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private InMemoryTaskManager taskManager;
 
-    public Epic(String title, String description, int taskId, TaskStatus status, List<Integer> subtaskIds) {
-        super(title, description, taskId, status);
+    public Epic(String title, String description, int taskId, TaskStatus status, List<Integer> subtaskIds,
+                Duration duration, LocalDateTime startTime, InMemoryTaskManager taskManager) {
+        super(title, description, taskId, duration, startTime, status);
         this.subtaskIds = subtaskIds;
+        this.taskManager = taskManager;
     }
 
     public List<Integer> getSubtaskIds() {
@@ -17,6 +29,110 @@ public class Epic extends Task {
 
     public void setSubtaskIds(List<Integer> subtaskIds) {
         this.subtaskIds = subtaskIds;
+        updateSubtasks();
+    }
+
+    private void updateSubtasks() {
+        for (Integer subtaskId : subtaskIds) {
+            Subtask subtask = taskManager.getSubtask(subtaskId);
+            if (subtask != null) {
+                taskManager.updateSubtask(subtask);
+            }
+        }
+    }
+
+    @Override
+    public Duration getDuration() {
+        return super.getDuration();
+    }
+
+    @Override
+    public LocalDateTime getStartTime() {
+        return super.getStartTime();
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setDurationInMinutes(long minutes) {
+        this.duration = Duration.ofMinutes(minutes);
+    }
+
+    public void calculateEpicTimes() {
+        if (subtaskIds.isEmpty()) {
+            return;
+        }
+
+        List<Subtask> subtasks = subtaskIds.stream()
+                .map(taskManager::getSubtask)
+                .collect(Collectors.toList());
+
+        LocalDateTime startTime = subtasks.stream()
+                .map(Subtask::getStartTime)
+                .min(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.MIN);
+
+        LocalDateTime endTime = subtasks.stream()
+                .map(subtask -> subtask.getStartTime().plusMinutes(subtask.getDurationInMinutes()))
+                .max(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.MIN);
+
+        long totalMinutes = subtasks.stream()
+                .mapToLong(Subtask::getDurationInMinutes)
+                .sum();
+
+        this.setStartTime(startTime);
+        this.setEndTime(endTime);
+        this.setDurationInMinutes(totalMinutes);
+    }
+
+    public void updateStatusBasedOnSubtasks(List<Subtask> subtasks) {
+        boolean allNew = true;
+        boolean allDone = true;
+
+        for (Subtask subtask : subtasks) {
+            switch (subtask.getStatus()) {
+                case IN_PROGRESS:
+                    this.setStatus(TaskStatus.IN_PROGRESS);
+                    allNew = false;
+                    allDone = false;
+                    break;
+                case DONE:
+                    allNew = false;
+                    break;
+                case NEW:
+                    allDone = false;
+                    break;
+            }
+        }
+
+        if (allNew) {
+            this.setStatus(TaskStatus.NEW);
+        } else if (allDone) {
+            this.setStatus(TaskStatus.DONE);
+        } else {
+            this.setStatus(TaskStatus.IN_PROGRESS); // Установка статуса эпика, если есть разные статусы подзадач
+        }
+    }
+
+    public void removeSubtask(Subtask subtask) {
+        subtaskIds.remove(Integer.valueOf(subtask.getId()));
+        calculateEpicTimes();
+        updateStatusBasedOnSubtasks(taskManager.getSubtasksForEpic(this.getId()));
+    }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC;
     }
 
     @Override
@@ -29,4 +145,5 @@ public class Epic extends Task {
                 ", subtaskIds=" + subtaskIds +
                 '}';
     }
+
 }

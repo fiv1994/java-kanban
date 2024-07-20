@@ -1,13 +1,18 @@
 package com.yandex.app;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.yandex.app.model.Epic;
 import com.yandex.app.model.Subtask;
 import com.yandex.app.model.Task;
+import com.yandex.app.server.service.DurationAdapter;
 import com.yandex.app.service.InMemoryTaskManager;
 import com.yandex.app.service.Managers;
 import com.yandex.app.service.TaskManager;
 import com.yandex.app.service.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +44,10 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Duration.class, new DurationAdapter())
+                .create();
+
         // Получение объекта-менеджера задач через Managers.getDefault()
         TaskManager taskManager = Managers.getDefault();
 
@@ -50,20 +59,22 @@ public class Main {
         InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
 
         // Создание задач
-        Task task1 = new Task("Задача 1", "Описание задачи 1", 1, TaskStatus.NEW);
-        Task task2 = new Task("Задача 2", "Описание задачи 2", 2, TaskStatus.IN_PROGRESS);
+        Task task1 = new Task("Задача 1", "Описание задачи 1", 1, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.NEW);
+        Task task2 = new Task("Задача 2", "Описание задачи 2", 2, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.IN_PROGRESS);
 
         // Создание подзадач для эпика
         Subtask subtask1 = new Subtask("Подзадача 1", "Описание подзадачи 1",
-                                        3, TaskStatus.NEW, false, 1);
+                                        3, 1, Duration.ZERO, LocalDateTime.MIN, TaskStatus.NEW);
         Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2",
-                                        4, TaskStatus.IN_PROGRESS, true, 1);
+                                        4, 1, Duration.ZERO, LocalDateTime.MIN, TaskStatus.IN_PROGRESS);
 
         // Создание эпиков
-        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1", 5,
-                                                TaskStatus.NEW, new ArrayList<>());
-        Epic epic2 = new Epic("Эпик 2", "Описание эпика 2", 6,
-                                                TaskStatus.IN_PROGRESS, new ArrayList<>());
+        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1", 5, TaskStatus.NEW, new ArrayList<>(),
+                Duration.ofMinutes(10), LocalDateTime.now().plusMinutes(10), inMemoryTaskManager);
+        Epic epic2 = new Epic("Эпик 2", "Описание эпика 2", 6, TaskStatus.IN_PROGRESS,
+                new ArrayList<>(), Duration.ofMinutes(10), LocalDateTime.now().plusMinutes(50), inMemoryTaskManager);
 
         // Добавление задач и эпиков в com.yandex.app.service.TaskManager
         taskManager.createTask(subtask1);

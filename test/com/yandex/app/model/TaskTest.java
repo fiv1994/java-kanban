@@ -1,12 +1,14 @@
-package test.com.yandex.app.model;
+package com.yandex.app.model;
 
-import com.yandex.app.model.Task;
 import com.yandex.app.service.InMemoryTaskManager;
 import com.yandex.app.service.TaskManager;
 import com.yandex.app.service.TaskStatus;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +20,8 @@ class TaskTest {
     @BeforeEach
     void setUp() {
         taskManager = new InMemoryTaskManager(); // Создание экземпляра InMemoryTaskManager
-        task = new Task("Test Task", "Test Description", 1, TaskStatus.IN_PROGRESS);
+        task = new Task("Test Task", "Test Description", 1, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.IN_PROGRESS);
     }
 
     @Test
@@ -70,15 +73,17 @@ class TaskTest {
         String expected = "com.yandex.app.model.Task{" +
                 "title='Test Task" +
                 "', description='Test Description" +
-                "', id=1, status=TODO" +
+                "', id=1, status=IN_PROGRESS" +
                 '}';
         assertEquals(expected, task.toString());
     }
 
     @Test
     void testEquals() {
-        Task sameTask = new Task("Test Task", "Test Description", 1, TaskStatus.NEW);
-        Task differentTask = new Task("Different Task", "Different Description", 2, TaskStatus.IN_PROGRESS);
+        Task sameTask = new Task("Test Task", "Test Description", 1, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.NEW);
+        Task differentTask = new Task("Different Task", "Different Description", 2, Duration.ZERO,
+                LocalDateTime.MIN, TaskStatus.IN_PROGRESS);
 
         assertTrue(task.equals(sameTask));
         assertFalse(task.equals(differentTask));
@@ -86,16 +91,27 @@ class TaskTest {
 
     @Test
     void testHashCode() {
-        assertEquals(1, task.hashCode());
+        assertEquals(32, task.hashCode());
     }
 
     @Test
     public void testEqualsForTask() {
-        Task task1 = new Task("Test Task", "Test Description", 1, TaskStatus.NEW);
-        Task task2 = new Task("Test Task", "Test Description", 1, TaskStatus.IN_PROGRESS);
-        Task task3 = new Task("Different Task", "Different Description", 2, TaskStatus.IN_PROGRESS);
+        Task task1 = new Task("Test Task", "Test Description", 1, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.NEW);
+        Task task2 = new Task("Test Task", "Test Description", 1, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.IN_PROGRESS);
+        Task task3 = new Task("Different Task", "Different Description", 2, Duration.ZERO,
+                LocalDateTime.MIN, TaskStatus.IN_PROGRESS);
 
         assertTrue(task1.equals(task2));
         assertFalse(task1.equals(task3));
+    }
+
+    @Test
+    void testUpdateTaskIntegrity() {
+        Task task = new Task("Test Task", "Test Description", 1, Duration.ZERO, LocalDateTime.MIN,
+                TaskStatus.NEW);
+        task.setId(2); // Обновление id задачи
+        assertNotEquals(1, task.getId()); // Проверка, что id изменился
     }
 }
