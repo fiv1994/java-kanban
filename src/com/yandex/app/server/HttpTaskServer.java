@@ -9,8 +9,6 @@ import com.yandex.app.service.TaskManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 public class HttpTaskServer {
     private HttpServer httpServer;
@@ -48,18 +46,6 @@ public class HttpTaskServer {
         InMemoryTaskManager taskManager = new InMemoryTaskManager();
         Gson gson = new GsonProvider().getGson(); // Использование экземпляра Gson из нового конструктора GsonProvider
         int port = 8080;
-
-        System.out.println("Введите номер порта (или нажмите Enter для использования порта " +
-                "по умолчанию: " + port + "):");
-        Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
-        String input = scanner.nextLine();
-        if (!input.isEmpty()) {
-            try {
-                port = Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Порт должен быть числом. Используется порт по умолчанию: " + port);
-            }
-        }
 
         HttpTaskServer server = new HttpTaskServer(taskManager, gson, port);
         server.start();
